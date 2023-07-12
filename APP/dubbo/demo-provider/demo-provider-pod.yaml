@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dubbo-demo-provider
+spec:
+  containers:
+  - name: dubbo-demo-provider
+    image: dubbo-provider-demo:0.0.1
+    ports:
+    - containerPort: 20880

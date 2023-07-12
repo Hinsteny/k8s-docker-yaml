@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: grpc-demo-server
+spec:
+  containers:
+  - name: grpc-demo-server
+    image: grpc-demo-server:0.0.1
+    ports:
+    - containerPort: 50051

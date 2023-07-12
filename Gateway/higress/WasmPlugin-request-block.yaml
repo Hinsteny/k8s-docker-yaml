@@ -1,0 +1,10 @@
+apiVersion: extensions.higress.io/v1alpha1
+kind: WasmPlugin
+metadata:
+  name: request-block
+  namespace: higress-system
+spec:
+  defaultConfig:
+    block_urls:
+    - "swagger.html"
+  url: file:///opt/plugins/wasm-go/extensions/request-block/plugin.wasm

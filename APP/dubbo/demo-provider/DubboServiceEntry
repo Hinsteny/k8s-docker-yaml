@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: dubbo
+  namespace: higress-system
+spec:
+  endpoints:
+  - address: 10.244.0.7
+    ports:
+      http: 20880
+  hosts:
+  - dubbo.static
+  location: MESH_EXTERNAL
+  ports:
+  - name: http
+    number: 20880
+    protocol: HTTP
+  resolution: STATIC

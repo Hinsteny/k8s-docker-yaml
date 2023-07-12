@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-standlone-rc3-service
+  namespace: higress-system
+spec:
+  selector:
+    name: nacos-standlone-rc3
+  clusterIP: None
+  ports:
+  - name: foo # name is not required for single-port Services
+    port: 8848

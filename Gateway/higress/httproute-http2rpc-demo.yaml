@@ -1,0 +1,19 @@
+apiVersion: networking.higress.io/v1
+kind: Http2Rpc
+metadata:
+  name: httproute-http2rpc-demo
+  namespace: higress-system
+spec:
+  routeType: "DUBBO"
+  routeService: "com.alibaba.dubbo.demo.DemoService"
+  methods: 
+  - serviceMethod: "sayHello"
+    headersAttach: "*"
+    httpMethods: 
+    - "ALL_GET"
+    - "ALL_POST"
+    httpPath: "/sayHello"
+    params:
+    - paramKey: "name"
+      paramSource: "ALL_QUERY_PARAMETER"
+      paramType: "java.lang.String"

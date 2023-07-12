@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nacos-standlone-rc3
+  namespace: higress-system
+  labels:
+    name: nacos-standlone-rc3
+spec:
+  containers:
+  - name: nacos-standlone-rc3
+    image: nacos-standlone:1.0.0-RC3 
+    ports:
+    - containerPort: 8848

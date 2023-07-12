@@ -1,0 +1,75 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: http-dubbo-transcoder-test
+  namespace: higress-system
+spec:
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: envoy.filters.network.http_connection_manager
+            subFilter:
+              name: envoy.filters.http.router
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.http_dubbo_transcoder
+        typed_config:
+          '@type': type.googleapis.com/udpa.type.v1.TypedStruct
+          type_url: type.googleapis.com/envoy.extensions.filters.http.http_dubbo_transcoder.v3.HttpDubboTranscoder
+  - applyTo: HTTP_ROUTE
+    match:
+      context: GATEWAY
+      routeConfiguration:
+        vhost:
+          route:
+            name: test
+    patch:
+      operation: MERGE
+      value:
+        route:
+          upgrade_configs:
+          - connect_config:
+              allow_post: true
+            upgrade_type: CONNECT
+        typed_per_filter_config:
+          envoy.filters.http.http_dubbo_transcoder:
+            '@type': type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.http_dubbo_transcoder.v3.HttpDubboTranscoder
+            value:
+              request_validation_options:
+                reject_unknown_method: true
+                reject_unknown_query_parameters: true
+              services_mapping:
+              - group: dev
+                method_mapping:
+                - name: sayName
+                  parameter_mapping:
+                  - extract_key: p
+                    extract_key_spec: ALL_QUERY_PARAMETER
+                    mapping_type: java.lang.String
+                  passthrough_setting:
+                    passthrough_all_headers: true
+                  path_matcher:
+                    match_http_method_spec: ALL_GET
+                    match_pattern: /dubbo/hello
+                name: com.alibaba.dubbo.demo.DemoService
+                version: 1.0.0
+              url_unescape_spec: ALL_CHARACTERS_EXCEPT_RESERVED
+  - applyTo: CLUSTER
+    match:
+      cluster:
+        service: dubbo.static
+      context: GATEWAY
+    patch:
+      operation: MERGE
+      value:
+        upstream_config:
+          name: envoy.upstreams.http.dubbo_tcp
+          typed_config:
+            '@type': type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.upstreams.http.dubbo_tcp.v3.DubboTcpConnectionPoolProto

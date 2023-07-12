@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: global
+  namespace: higress-system
+spec:
+  gateways:
+  - higress-system/global
+  hosts:
+  - '*'
+  http:
+  - match:
+    - ignoreUriCase: false
+      uri:
+        prefix: /dubbo
+    name: test
+    route:
+    - destination:
+        host: dubbo.static
+        port:
+          number: 20880
